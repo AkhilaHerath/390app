@@ -33,7 +33,7 @@ service / on new http:Listener(9091) {
             }
             nextId = maxId + 1;
         }
-
+        //1 - is sheet two which has the questions
         error? result = appendData(spreadsheetId, 1, [nextId, email]);
         if result is error {
             return "Failed to add email: " + result.message();
@@ -78,6 +78,54 @@ service / on new http:Listener(9091) {
         return getSheetData(spreadsheetId, 1);
     }
 
+    // resource function post answersToSheets(Answers answers) returns string|error {
+    //     // (int|string|decimal)[][]|error data = getSheetData(spreadsheetId, 0);
+    //     // if data is error {
+    //     //     return "Failed to get sheet data: " + data.message();
+    //     // }
+
+    //     sheets:Spreadsheet|error spreadsheet = spreadsheetClient->openSpreadsheetById(spreadsheetId);
+    //     if spreadsheet is error {
+    //         log:printError(spreadsheet.toString());
+    //         return error("Spreadsheet not found!");
+    //     }
+
+    //     // Flag to check if the email matches an existing sheet
+    //     boolean sheetExists = false;
+    //     int sheetIndex = 0;
+
+    //     // Iterate through each sheet in the spreadsheet
+    //     foreach sheets:Sheet sheet in spreadsheet.sheets {
+    //         sheetIndex += 1;
+    //         if (answers.email.toString() == sheet.properties.title) {
+    //             sheetExists = true;
+    //             break;
+    //         }
+    //     }
+
+    //     // If the sheet doesn't exist, create a new one
+    //     if (!sheetExists) {
+    //         error? newSheet = addNewSheet(spreadsheetId, answers.email.toString());
+    //         if newSheet is error {
+    //             return "Failed to create new sheet: " + newSheet.message();
+    //         }
+    //         // Update the sheetIndex to point to the newly created sheet
+    //         sheetIndex = spreadsheet.sheets.length() + 1;
+    //     }
+    //     // Append the answers to the sheet
+    //     string|error result = appendAnswers(spreadsheetId, sheetIndex, [answers]);
+    //     if result is error {
+    //         return "Failed to add data: " + result.message();
+
+    //     }
+    //     // string|error result = appendToCell(spreadsheetId, sheetIndex, [answers]);
+    //     // if result is error {
+    //     //     return "Failed to add data: " + result.message();
+    //     // }
+
+    //     return "Data added successfully";
+    // }
+
     resource function post answersToSheets(Answers answers) returns string|error {
         (int|string|decimal)[][]|error data = getSheetData(spreadsheetId, 0);
         if data is error {
@@ -114,6 +162,7 @@ service / on new http:Listener(9091) {
         }
 
         // Append the answers to the sheet
+        log:printInfo("Answers: " + answers.toString());
         string|error result = appendAnswers(spreadsheetId, sheetIndex, [answers]);
         if result is error {
             return "Failed to add data: " + result.message();
